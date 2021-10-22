@@ -12,11 +12,19 @@ list P=16F737
  __config _CONFIG1, _FOSC_HS & _CP_OFF & _DEBUG_OFF & _VBOR_2_0 & _BOREN_0 & _MCLR_ON & _PWRTE_ON & _WDT_OFF
  __config _CONFIG2, _BORSEN_0 & _IESO_OFF & _FCMEN_OFF
 
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;Connections 
+; Green --> PORT C, pin 0
+; RED ---> PORT C, pin 1
+; Main Transistor --> PORT D, 
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 call initPort ; initialize ports
 
-;Loop, we want to loop this forever and keep checking the triggers
-Loop
+;GreenPressLoop, we want to loop this forever and keep checking the triggers
+GreenPressLoop
 btfss PORTC,0 ; See if the green button has been pressed
 goto GreenPress ; goto greenpress
 goto Loop
