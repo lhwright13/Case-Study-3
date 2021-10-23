@@ -1,5 +1,3 @@
-list P=16F737
- title "Case Study 3"
 ;***********************************************************
 ; This program runs on the Exercise PC board.
 ; 
@@ -16,7 +14,7 @@ list P=16F737
 ;Connections 
 ; Green --> PORT C, pin 0
 ; RED ---> PORT C, pin 1
-; Main Transistor --> PORT D, 
+; Main Transistor --> PORT D, pin 7 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -25,11 +23,12 @@ call initPort ; initialize ports
 
 ;GreenPressLoop, we want to loop this forever and keep checking the triggers
 GreenPressLoop
-btfss PORTC,0 ; See if the green button has been pressed
+btfsc PORTC,0 ; See if the green button has been pressed
 goto GreenPress ; goto greenpress
-goto Loop
+goto GreenPressLoop
 
-GreenPress ; we run this when the green button is pressed
+GreenPress ; we run this when the green button is pressed and check
+			; to see if the button is released
 btfss PortC,0 ;Check to see if the button has not been released
 	goto GreenPress
  	;read the dial.
@@ -50,6 +49,22 @@ btfss PortC,0 ;Check to see if the button has not been released
 	
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 ; Mode 1
+ModeOne ; Mode one checks the status of the red pin and toggles the Main Transistor
+btfsc PORTC,0 ; See if the green button has been pressed
+bcf PORTD,7   ; If the green button is pressed, turn transistor off	
+btfss STATUS,Z ;If the Status Z bit is 1, then skip
+goto GreenPress ; Exit Mode 1 and go to Green Press
+btfss PORTC, 0 ; Skip if red button is pressed
+goto ModeOne ;If button is not pressed, go to ModeOne
+redRelease ;Label to keep checking until red is released
+btfsc PORTC, 0 ; Skip if red button is released
+goto redRelease ;Keep checking if the button has been released
+bsf PORTD,7   ; If the green button is pressed, turn transistor on
+goto ModeOne ; Go back to Mode one
+
+
+
+
 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -64,6 +79,12 @@ btfss PortC,0 ;Check to see if the button has not been released
 ; Mode 4
 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
 
 ;
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
