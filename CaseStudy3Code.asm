@@ -15,6 +15,7 @@
 ; Green --> PORT C, pin 0
 ; RED ---> PORT C, pin 1
 ; Main Transistor --> PORT D, pin 7 
+; Sensor ADC ---> PORT A , pin 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -59,16 +60,23 @@ goto ModeOne ;If button is not pressed, go to ModeOne
 redRelease ;Label to keep checking until red is released
 btfsc PORTC, 0 ; Skip if red button is released
 goto redRelease ;Keep checking if the button has been released
-bsf PORTD,7   ; If the green button is pressed, turn transistor on
+bsf PORTD,7   ; If the red button is released, turn transistor on
 goto ModeOne ; Go back to Mode one
-
-
-
-
-
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 ; Mode 2
+ModeTwo ;ModeTwo checks the value of the ADC then starts a counter until interuptted
+btfsc PORTC,0 ; See if the green button has been pressed
+goto GreenPress ; Exit Mode 1 and go to Green Press
+btfss PORTC, 0 ; Skip if red button is pressed
+goto ModeOne ;If button is not pressed, go to ModeOne
+redRelease ;Label to keep checking until red is released
+btfsc PORTC, 0 ; Skip if red button is released
+goto redRelease ;Keep checking if the button has been released
+;Read the AD timer if the red button is released
+ADTimer equ 110h ;create an ADTimer memory address to hold the value of the AD
+;We need to prompt the ADC to do the conversion
+;TODO: Need to figure out a way to store 10 bits of data
 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
