@@ -73,8 +73,6 @@ goto ModeOne ;If button is not pressed, go to ModeOne
 redRelease ;Label to keep checking until red is released
 btfsc PORTC, 0 ; Skip if red button is released
 goto redRelease ;Keep checking if the button has been released
-;Read the AD timer if the red button is released
-ADTimer equ 110h ;create an ADTimer memory address to hold the value of the AD
 ;We need to prompt the ADC to do the conversion
 ;TODO: Need to figure out a way to store 10 bits of data
 
@@ -88,8 +86,20 @@ ADTimer equ 110h ;create an ADTimer memory address to hold the value of the AD
 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+;
+; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+;
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+; READ ADC and store the values
+ReadADC
+ADCH equ 110h ;Create a memory location for ADCRESH
+;TODO: Need to actually read the register value
 
-
+;
+; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+;
+; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+;
 
 
 
@@ -109,6 +119,7 @@ clrf TRISB ; Configure Port B as all outputs
  movwf TRISC ; Configure Port C as all inputs
  movlw B'00001110' ; RA0 analog input, all other digital
 movwf ADCON1 ; move to special function A/D register
+
  bcf STATUS,RP0 ; Clear bit in STATUS register for bank 0
  return
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
