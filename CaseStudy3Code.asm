@@ -16,6 +16,7 @@
 ; RED ---> PORT C, pin 1
 ; Main Transistor --> PORT D, pin 7 
 ; Sensor ADC ---> PORT A , pin 
+; LED -----> PORT 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -79,6 +80,45 @@ goto redRelease ;Keep checking if the button has been released
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 ; Mode 3
+ModeThree
+btfsc PORTC,0 ; See if the green button has been pressed
+	goto GreenPress ; Exit Mode 3 and go to Green Press
+btfss PORTC, 0 ; Skip if red button is pressed
+	goto Modethree ;If button is not pressed, go to ModeThree
+redRelease ;Label to keep checking until red is released
+btfsc PORTC, 0 ; Skip if red button is released
+	goto redRelease ;Keep checking if the button has been released
+movlw B'00000011' ;Move the led indicator config to working 
+movwf PORTB ; Set the Indicator LED
+ADCRead
+goto ReadADC ; Read the value from the ADC
+movf ADCH,0 ; This will move the value fo ADCH to W
+andlw B'11111111' ; Check if the ADC value is zero
+btfss STATUS,Z ;if this value is zero, then the ADC read zero so throw an error
+	goto ModeThreeError
+;Subtract 70hex from the ADC value
+sublw H'70' 
+;Now we want to check to see if the Value of C and Z is zero (Less than 70h)
+btfss STATUS, C ; Skips if the value is 1
+	bcf PORTD,7 ;Turns off the Transistor
+bsf PORTD,7 ;Turns on the Transistor
+btfsc PORTC,1 ;Skips if Red button is pressed
+	goto ADCRead
+RedReleaseTwo ;Label to check to see if the Red button is released
+btfss PORTC,1 ;Skips if the Red is still pressed
+	goto RedReleaseTwo ;keep checking if red is released
+;Red is released
+bcf PORTD,7 ;Turns off the Transistor
+movlw B'00000000' ;Move the led indicator config to working 
+movwf PORTB ; Set the Indicator LED
+goto ModeThree
+
+	
+
+
+ModeThreeError
+goto ModeThreeError ; If we have an error we want to continue to loop
+
 
 ; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ; &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
